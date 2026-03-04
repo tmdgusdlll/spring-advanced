@@ -7,7 +7,7 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
@@ -16,4 +16,4 @@ spring:
 
 jwt:
   secret:
-    key: IfthisgetsstolenitsabigproblemIfthelengthistooshortthesecurityisnotsufficientsoanerroroccurs
+    key: aGVsbG9zcHJpbmdzZWNyZXRrZXloZWxsb3NwcmluZ3NlY3JldGtleTEyMw==
