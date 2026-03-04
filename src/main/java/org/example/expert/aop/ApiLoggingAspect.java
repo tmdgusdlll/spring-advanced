@@ -26,7 +26,7 @@ public class ApiLoggingAspect {
 
     private final ObjectMapper objectMapper;
 
-    @Around("@within(org.example.expert.aop.annotation.AdminLog)")
+    @Around("@annotation(org.example.expert.aop.annotation.AdminLog)")
     public Object logApi(ProceedingJoinPoint joinPoint) throws Throwable {
 
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder
