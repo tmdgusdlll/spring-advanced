@@ -12,6 +12,7 @@ import org.example.expert.domain.todo.repository.TodoRepository;
 import org.example.expert.domain.user.entity.User;
 import org.example.expert.domain.user.enums.UserRole;
 import org.example.expert.domain.user.repository.UserRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -40,6 +41,7 @@ class ManagerServiceTest {
     private ManagerService managerService;
 
     @Test
+    @DisplayName("[Case 1] ManagerServiceTest 예외처리 테스트")
     public void manager_목록_조회_시_Todo가_없다면_NPE_에러를_던진다() {
         // given
         long todoId = 1L;
