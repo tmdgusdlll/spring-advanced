@@ -54,6 +54,7 @@ class ManagerServiceTest {
     }
 
     @Test
+    @DisplayName("[Case 3] ManagerServiceTest 예외처리 테스트(2)")
     void todo의_user가_null인_경우_예외가_발생한다() {
         // given
         AuthUser authUser = new AuthUser(1L, "a@a.com", UserRole.USER);
