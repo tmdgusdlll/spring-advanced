@@ -5,12 +5,12 @@ import org.example.expert.domain.comment.dto.response.CommentSaveResponse;
 import org.example.expert.domain.comment.entity.Comment;
 import org.example.expert.domain.comment.repository.CommentRepository;
 import org.example.expert.domain.common.dto.AuthUser;
-import org.example.expert.domain.common.exception.InvalidRequestException;
-import org.example.expert.domain.common.exception.ServerException;
+import org.example.expert.domain.common.exception.NotFoundException;
 import org.example.expert.domain.todo.entity.Todo;
-import org.example.expert.domain.todo.repository.TodoRepository;
+import org.example.expert.domain.todo.service.TodoService;
 import org.example.expert.domain.user.entity.User;
 import org.example.expert.domain.user.enums.UserRole;
+import org.example.expert.domain.user.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +18,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,7 +31,7 @@ class CommentServiceTest {
     @Mock
     private CommentRepository commentRepository;
     @Mock
-    private TodoRepository todoRepository;
+    private TodoService todoService;
     @InjectMocks
     private CommentService commentService;
 
@@ -44,11 +43,11 @@ class CommentServiceTest {
         CommentSaveRequest request = new CommentSaveRequest("contents");
         AuthUser authUser = new AuthUser(1L, "email", UserRole.USER);
 
-        given(todoRepository.findById(todoId)).willReturn(Optional.empty());
+        given(todoService.getTodoById(todoId)).willThrow(new NotFoundException("Todo not found"));
 
         // when & then
         assertThatThrownBy(() -> commentService.saveComment(authUser, todoId, request))
-                .isInstanceOf(InvalidRequestException.class)
+                .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining("Todo not found");
     }
 
@@ -62,7 +61,7 @@ class CommentServiceTest {
         Todo todo = new Todo("title", "title", "contents", user);
         Comment comment = new Comment(request.getContents(), user, todo);
 
-        given(todoRepository.findById(anyLong())).willReturn(Optional.of(todo));
+        given(todoService.getTodoById(anyLong())).willReturn(todo);
         given(commentRepository.save(any())).willReturn(comment);
 
         // when
