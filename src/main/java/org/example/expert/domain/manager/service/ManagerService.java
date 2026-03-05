@@ -20,6 +20,7 @@ import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,20 +30,23 @@ public class ManagerService {
     private final UserService userService;
     private final TodoService todoService;
 
+    // 일정을 생성한 유저인지 확인
+    private void validateTodoOwner(AuthUser authUser, Todo todo, String errorMessage) {
+        if (todo.getUser() == null || !ObjectUtils.nullSafeEquals(authUser.getId(), todo.getUser().getId())) {
+            throw new InvalidRequestException(errorMessage);
+        }
+    }
+
     @Transactional
     public ManagerSaveResponse saveManager(AuthUser authUser, long todoId, ManagerSaveRequest managerSaveRequest) {
         // 일정을 만든 유저
-        User user = User.fromAuthUser(authUser);
         Todo todo = todoService.getTodoById(todoId);
-
-        if (todo.getUser() == null || !ObjectUtils.nullSafeEquals(user.getId(), todo.getUser().getId())) {
-            throw new InvalidRequestException("일정을 생성한 유저만 담당자를 지정할 수 있습니다.");
-        }
+        validateTodoOwner(authUser, todo, "일정을 생성한 유저만 담당자를 지정할 수 있습니다");
 
         User managerUser = userService.getUserById(managerSaveRequest.getManagerUserId(),
                 "등록하려고 하는 담당자 유저가 존재하지 않습니다.");
 
-        if (ObjectUtils.nullSafeEquals(user.getId(), managerUser.getId())) {
+        if (ObjectUtils.nullSafeEquals(authUser.getId(), managerUser.getId())) {
             throw new InvalidRequestException("일정 작성자는 본인을 담당자로 등록할 수 없습니다.");
         }
 
@@ -60,25 +64,19 @@ public class ManagerService {
         Todo todo = todoService.getTodoById(todoId);
 
         List<Manager> managerList = managerRepository.findByTodoIdWithUser(todo.getId());
-
-        List<ManagerResponse> dtoList = new ArrayList<>();
-        for (Manager manager : managerList) {
-            User user = manager.getUser();
-            dtoList.add(new ManagerResponse(
-                    manager.getId(),
-                    new UserResponse(user.getId(), user.getEmail())
-            ));
-        }
-        return dtoList;
+        return managerList.stream()
+                .map(manager -> {
+                    User user = manager.getUser();
+                    return new ManagerResponse(manager.getId(),
+                            new UserResponse(user.getId(), user.getEmail()));
+                })
+                .toList();
     }
 
     @Transactional
     public void deleteManager(AuthUser authUser, long todoId, long managerId) {
         Todo todo = todoService.getTodoById(todoId);
-
-        if (todo.getUser() == null || !ObjectUtils.nullSafeEquals(authUser.getId(), todo.getUser().getId())) {
-            throw new InvalidRequestException("해당 일정을 만든 유저가 유효하지 않습니다.");
-        }
+        validateTodoOwner(authUser, todo, "해당 일정을 만든 유저가 유효하지 않습니다.");
 
         Manager manager = managerRepository.findById(managerId)
                 .orElseThrow(() -> new NotFoundException("Manager not found"));
