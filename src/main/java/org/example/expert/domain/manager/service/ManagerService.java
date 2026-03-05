@@ -39,7 +39,7 @@ public class ManagerService {
     public ManagerSaveResponse saveManager(AuthUser authUser, long todoId, ManagerSaveRequest managerSaveRequest) {
         // 일정을 만든 유저
         Todo todo = todoService.getTodoById(todoId);
-        validateTodoOwner(authUser, todo, "일정을 생성한 유저만 담당자를 지정할 수 있습니다");
+        validateTodoOwner(authUser, todo, "일정을 생성한 유저만 담당자를 지정할 수 있습니다.");
 
         User managerUser = userService.getUserById(managerSaveRequest.getManagerUserId(),
                 "등록하려고 하는 담당자 유저가 존재하지 않습니다.");
