@@ -15,7 +15,7 @@ public class UserAdminService {
 
     @Transactional
     public void changeUserRole(long userId, UserRoleChangeRequest userRoleChangeRequest) {
-        User user = userService.findUserById(userId);
+        User user = userService.getUserById(userId);
         user.updateRole(UserRole.of(userRoleChangeRequest.getRole()));
     }
 }

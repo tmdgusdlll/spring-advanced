@@ -25,7 +25,7 @@ public class TodoService {
     private final WeatherClient weatherClient;
 
     // findByIdWithUser 메서드화
-    public Todo findTodoById(Long todoId) {
+    public Todo getTodoById(Long todoId) {
         return todoRepository.findByIdWithUser(todoId).orElseThrow(
                 () -> new InvalidRequestException("Todo not found")
         );
@@ -74,7 +74,7 @@ public class TodoService {
 
     @Transactional(readOnly = true)
     public TodoResponse getTodo(long todoId) {
-        Todo todo = findTodoById(todoId);
+        Todo todo = getTodoById(todoId);
 
         User user = todo.getUser();
 

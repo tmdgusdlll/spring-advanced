@@ -18,13 +18,13 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     // findById 메서드화
-    public User findUserById(Long userId) {
+    public User getUserById(Long userId) {
         return userRepository.findById(userId).orElseThrow(
                 () -> new InvalidRequestException("User not found")
         );
     }
     // findById 메서드 오버로딩
-    public User findUserById(Long userId, String errorMessage) {
+    public User getUserById(Long userId, String errorMessage) {
         return userRepository.findById(userId).orElseThrow(
                 () -> new InvalidRequestException(errorMessage)
         );
@@ -32,13 +32,13 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserResponse getUser(long userId) {
-        User user = findUserById(userId);
+        User user = getUserById(userId);
         return new UserResponse(user.getId(), user.getEmail());
     }
 
     @Transactional
     public void changePassword(long userId, UserChangePasswordRequest userChangePasswordRequest) {
-        User user = findUserById(userId);
+        User user = getUserById(userId);
 
         // 비번 확인 후
         if (!passwordEncoder.matches(userChangePasswordRequest.getOldPassword(), user.getPassword())) {
