@@ -3,6 +3,7 @@ package org.example.expert.domain.user.service;
 import lombok.RequiredArgsConstructor;
 import org.example.expert.config.PasswordEncoder;
 import org.example.expert.domain.common.exception.InvalidRequestException;
+import org.example.expert.domain.common.exception.NotFoundException;
 import org.example.expert.domain.user.dto.request.UserChangePasswordRequest;
 import org.example.expert.domain.user.dto.response.UserResponse;
 import org.example.expert.domain.user.entity.User;
@@ -20,7 +21,7 @@ public class UserService {
     // findById 메서드화
     public User getUserById(Long userId) {
         return userRepository.findById(userId).orElseThrow(
-                () -> new InvalidRequestException("User not found")
+                () -> new NotFoundException("User not found")
         );
     }
     // findById 메서드 오버로딩
