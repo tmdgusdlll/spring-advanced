@@ -17,29 +17,36 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    // findById 메서드화
+    public User findUserById(Long userId) {
+        return userRepository.findById(userId).orElseThrow(
+                () -> new InvalidRequestException("User not found")
+        );
+    }
+    // findById 메서드 오버로딩
+    public User findUserById(Long userId, String errorMessage) {
+        return userRepository.findById(userId).orElseThrow(
+                () -> new InvalidRequestException(errorMessage)
+        );
+    }
+
     @Transactional(readOnly = true)
     public UserResponse getUser(long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new InvalidRequestException("User not found"));
+        User user = findUserById(userId);
         return new UserResponse(user.getId(), user.getEmail());
     }
 
     @Transactional
     public void changePassword(long userId, UserChangePasswordRequest userChangePasswordRequest) {
-        if (userChangePasswordRequest.getNewPassword().length() < 8 ||
-                !userChangePasswordRequest.getNewPassword().matches(".*\\d.*") ||
-                !userChangePasswordRequest.getNewPassword().matches(".*[A-Z].*")) {
-            throw new InvalidRequestException("새 비밀번호는 8자 이상이어야 하고, 숫자와 대문자를 포함해야 합니다.");
-        }
+        User user = findUserById(userId);
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new InvalidRequestException("User not found"));
-
-        if (passwordEncoder.matches(userChangePasswordRequest.getNewPassword(), user.getPassword())) {
-            throw new InvalidRequestException("새 비밀번호는 기존 비밀번호와 같을 수 없습니다.");
-        }
-
+        // 비번 확인 후
         if (!passwordEncoder.matches(userChangePasswordRequest.getOldPassword(), user.getPassword())) {
             throw new InvalidRequestException("잘못된 비밀번호입니다.");
+        }
+        // 비번 변경 가능
+        if (passwordEncoder.matches(userChangePasswordRequest.getNewPassword(), user.getPassword())) {
+            throw new InvalidRequestException("새 비밀번호는 기존 비밀번호와 같을 수 없습니다.");
         }
 
         user.changePassword(passwordEncoder.encode(userChangePasswordRequest.getNewPassword()));

@@ -24,6 +24,13 @@ public class TodoService {
     private final TodoRepository todoRepository;
     private final WeatherClient weatherClient;
 
+    // findByIdWithUser 메서드화
+    public Todo findTodoById(Long todoId) {
+        return todoRepository.findByIdWithUser(todoId).orElseThrow(
+                () -> new InvalidRequestException("Todo not found")
+        );
+    }
+
     @Transactional
     public TodoSaveResponse saveTodo(AuthUser authUser, TodoSaveRequest todoSaveRequest) {
         User user = User.fromAuthUser(authUser);
@@ -38,13 +45,14 @@ public class TodoService {
         );
         Todo savedTodo = todoRepository.save(newTodo);
 
-        return new TodoSaveResponse(
-                savedTodo.getId(),
-                savedTodo.getTitle(),
-                savedTodo.getContents(),
-                weather,
-                new UserResponse(user.getId(), user.getEmail())
-        );
+        // 그냥.. 빌더 사용해보기
+        return TodoSaveResponse.builder()
+                .id(savedTodo.getId())
+                .title(savedTodo.getTitle())
+                .contents(savedTodo.getContents())
+                .weather(savedTodo.getWeather())
+                .user(new UserResponse(user.getId(), user.getEmail()))
+                .build();
     }
 
     @Transactional(readOnly = true)
@@ -66,8 +74,7 @@ public class TodoService {
 
     @Transactional(readOnly = true)
     public TodoResponse getTodo(long todoId) {
-        Todo todo = todoRepository.findByIdWithUser(todoId)
-                .orElseThrow(() -> new InvalidRequestException("Todo not found"));
+        Todo todo = findTodoById(todoId);
 
         User user = todo.getUser();
 
