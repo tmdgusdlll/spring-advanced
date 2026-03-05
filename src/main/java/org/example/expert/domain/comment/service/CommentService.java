@@ -40,7 +40,7 @@ public class CommentService {
         return new CommentSaveResponse(
                 savedComment.getId(),
                 savedComment.getContents(),
-                new UserResponse(user.getId(), user.getEmail())
+                UserResponse.from(user)
         );
     }
 
@@ -52,7 +52,7 @@ public class CommentService {
                 .map(comment -> {
                     User user = comment.getUser();
                     return new CommentResponse(comment.getId(), comment.getContents(),
-                            new UserResponse(user.getId(), user.getEmail()));
+                            UserResponse.from(user));
                 }).toList();
     }
 }

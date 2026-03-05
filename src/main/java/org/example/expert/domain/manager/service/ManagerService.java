@@ -18,9 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -68,7 +66,7 @@ public class ManagerService {
                 .map(manager -> {
                     User user = manager.getUser();
                     return new ManagerResponse(manager.getId(),
-                            new UserResponse(user.getId(), user.getEmail()));
+                            UserResponse.from(user));
                 })
                 .toList();
     }

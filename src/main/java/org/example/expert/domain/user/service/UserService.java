@@ -34,8 +34,9 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserResponse getUser(long userId) {
         User user = getUserById(userId);
-        return new UserResponse(user.getId(), user.getEmail());
+        return UserResponse.from(user);
     }
+
 
     @Transactional
     public void changePassword(long userId, UserChangePasswordRequest userChangePasswordRequest) {

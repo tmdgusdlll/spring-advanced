@@ -45,48 +45,19 @@ public class TodoService {
                 user
         );
         Todo savedTodo = todoRepository.save(newTodo);
-
-        // 그냥.. 빌더 사용해보기
-        return TodoSaveResponse.builder()
-                .id(savedTodo.getId())
-                .title(savedTodo.getTitle())
-                .contents(savedTodo.getContents())
-                .weather(savedTodo.getWeather())
-                .user(new UserResponse(user.getId(), user.getEmail()))
-                .build();
+        return TodoSaveResponse.from(savedTodo);
     }
 
     @Transactional(readOnly = true)
     public Page<TodoResponse> getTodos(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
-
         Page<Todo> todos = todoRepository.findAllByOrderByModifiedAtDesc(pageable);
-
-        return todos.map(todo -> new TodoResponse(
-                todo.getId(),
-                todo.getTitle(),
-                todo.getContents(),
-                todo.getWeather(),
-                new UserResponse(todo.getUser().getId(), todo.getUser().getEmail()),
-                todo.getCreatedAt(),
-                todo.getModifiedAt()
-        ));
+        return todos.map(TodoResponse::from);
     }
 
     @Transactional(readOnly = true)
     public TodoResponse getTodo(long todoId) {
         Todo todo = getTodoById(todoId);
-
-        User user = todo.getUser();
-
-        return new TodoResponse(
-                todo.getId(),
-                todo.getTitle(),
-                todo.getContents(),
-                todo.getWeather(),
-                new UserResponse(user.getId(), user.getEmail()),
-                todo.getCreatedAt(),
-                todo.getModifiedAt()
-        );
+        return TodoResponse.from(todo);
     }
 }
