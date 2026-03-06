@@ -61,7 +61,7 @@ JWT 인증, JPA, AOP 등 Spring의 핵심 기술을 활용하여 구현했습니
 **1. PasswordEncoderTest**
 
 - `@InjectMocks`로 `PasswordEncoder`를 주입받아 실제 BCrypt 암호화 및 검증이 동작하는지 확인했습니다.
-- `encode()`로 암호화한 값을 `matches()`로 검증하는 흐름으로 테스트를 수정했습니다.
+- `matches()`과정에서 비교 파라미터의 순서가 올바르지않아 실패했던 문제를 수정했습니다.
 
 **2. ManagerServiceTest - Case 1**
 
