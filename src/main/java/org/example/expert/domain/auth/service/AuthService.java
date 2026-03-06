@@ -117,6 +117,7 @@ public class AuthService {
                 );
     }
 
+    @Transactional
     public void logout(Long userId) {
         User user = userService.getUserById(userId);
         refreshTokenRepository.deleteByUser(user);

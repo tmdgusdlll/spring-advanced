@@ -31,7 +31,7 @@ public class JwtFilter implements Filter {
 
         String url = httpRequest.getRequestURI();
 
-        if (url.startsWith("/auth")) {
+        if (url.startsWith("/auth") && !url.equals("/auth/logout")) {
             chain.doFilter(request, response);
             return;
         }

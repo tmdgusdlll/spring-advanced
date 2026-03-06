@@ -42,7 +42,7 @@ public class JwtUtil {
                 Jwts.builder()
                         .setSubject(String.valueOf(userId))
                         .claim("email", email)
-                        .claim("userRole", userRole)
+                        .claim("userRole", userRole.name())
                         .claim("type", "access")
                         .setExpiration(new Date(date.getTime() + ACCESS_TOKEN_TIME))
                         .setIssuedAt(date) // 발급일
