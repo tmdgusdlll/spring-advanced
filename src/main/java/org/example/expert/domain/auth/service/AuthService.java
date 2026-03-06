@@ -61,7 +61,7 @@ public class AuthService {
         return new TokenPairResponse(accessToken, refreshToken);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public TokenPairResponse signin(SigninRequest signinRequest) {
         User user = userRepository.findByEmail(signinRequest.getEmail()).orElseThrow(
                 () -> new InvalidRequestException("가입되지 않은 유저입니다."));
@@ -94,7 +94,7 @@ public class AuthService {
                 () -> new InvalidRequestException("저장된 리프레시 토큰이 없습니다.")
         );
 
-        if (!savedRefreshToken.equals(refreshToken)) {
+        if (!savedRefreshToken.getToken().equals(refreshToken)) {
             throw new InvalidRequestException("리프레시 토큰이 일치하지 않습니다.");
         }
 
